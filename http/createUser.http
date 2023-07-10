@@ -1,0 +1,26 @@
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "firstName": "Nikita",
+  "lastName": "Kirejev",
+  "age": 20,
+  "height": 185,
+  "weight": 75,
+  "sex": "M",
+  "departmentName": "Dental",
+  "personalCode": 502500226081
+}
+
+###
+POST http://localhost:8080/employee/login
+Content-Type: application/json
+
+{
+  "email": "nikitakirejev26@gmail.com",
+  "password": "123"
+}
+
+###
+GET http://localhost:8080/employee?page=0&orderBy=firstName
+Content-Type: application/json

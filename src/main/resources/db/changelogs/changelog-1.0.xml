@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet id="0" author="Andrey Gorbovskiy">
+        <createTable tableName="department">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1" author="Andrey Gorbovskiy">
+        <createTable tableName="employee">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="age" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="height" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weight" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sex" type="enum('F', 'M')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="department_id" type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_department_employee"
+                             references="department(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Viktorija Mištšenko">
+        <createTable tableName="client">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="first_name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="personal_code" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="doctor_id" type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_employee_client"
+                             references="employee(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="Viktorija Mištšenko">
+        <createTable tableName="available_times">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="time" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="doctor_id" type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_employee_times"
+                             references="employee(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="Nikita Kirejev">
+        <addColumn tableName="employee">
+            <column name="code" type="bigint">
+                <constraints unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5" author="Andrey Gorbovskiy">
+        <renameColumn tableName="employee" oldColumnName="code" newColumnName="personal_code"
+                      columnDataType="bigint"/>
+    </changeSet>
+
+    <changeSet id="6" author="Andrey Gorbovskiy">
+        <dropNotNullConstraint tableName="client" columnName="doctor_id" columnDataType="int"/>
+    </changeSet>
+
+    <changeSet id="7" author="Andrey Gorbovskiy">
+        <dropForeignKeyConstraint baseTableName="client" constraintName="fk_employee_client"/>
+        <addForeignKeyConstraint baseTableName="client" baseColumnNames="doctor_id" constraintName="fk_employee_client"
+                                 referencedTableName="employee"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="8" author="Andrey Gorbovskiy">
+        <modifyDataType tableName="available_times" columnName="time" newDataType="datetime"/>
+    </changeSet>
+
+    <changeSet id="9" author="Andrey Gorbovskiy">
+        <dropForeignKeyConstraint baseTableName="available_times" constraintName="fk_employee_times"/>
+        <dropNotNullConstraint tableName="available_times" columnName="doctor_id" columnDataType="int"/>
+        <addForeignKeyConstraint baseTableName="available_times" baseColumnNames="doctor_id"
+                                 constraintName="fk_employee_times"
+                                 referencedTableName="employee"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="10" author="Andrey Gorbovskiy">
+        <dropForeignKeyConstraint baseTableName="employee" constraintName="fk_department_employee"/>
+        <dropNotNullConstraint tableName="employee" columnName="department_id" columnDataType="int"/>
+        <addForeignKeyConstraint baseTableName="employee" baseColumnNames="department_id"
+                                 constraintName="fk_department_employee"
+                                 referencedTableName="department"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="11" author="Viktorija Mištšenko">
+        <createTable tableName="cabinet">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name='employee_id' type="int"/>
+            <column name='department_id' type="int"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="cabinet" baseColumnNames="employee_id"
+                                 constraintName="fk_employee_cabinet"
+                                 referencedTableName="employee"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+        <addForeignKeyConstraint baseTableName="cabinet" baseColumnNames="department_id"
+                                 constraintName="fk_department_cabinet"
+                                 referencedTableName="department"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="12" author="Andrey Gorbovskiy">
+        <addColumn tableName="cabinet">
+            <column name="number" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="13" author="Nikita Kirejev">
+        <addColumn tableName="client">
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="14" author="Nikita Kirejev">
+        <addColumn tableName="client">
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="15" author="Nikita Kirejev">
+        <addColumn tableName="employee">
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="16" author="Nikita Kirejev">
+        <addColumn tableName="employee">
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="17" author="Andrey Gorbovskiy">
+        <dropColumn tableName="employee" columnName="email"/>
+        <dropColumn tableName="employee" columnName="password"/>
+        <dropColumn tableName="client" columnName="email"/>
+        <dropColumn tableName="client" columnName="password"/>
+    </changeSet>
+
+    <changeSet id="18" author="Andrey Gorbovskiy">
+        <createTable tableName="account">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="19" author="Nikita Kirejev">
+        <renameColumn tableName="account" oldColumnName="password" newColumnName="hash_password"
+                      columnDataType="varchar(255)"/>
+    </changeSet>
+
+    <changeSet id="20" author="Andrey Gorbovskiy">
+        <addUniqueConstraint tableName="client" columnNames="personal_code"/>
+        <addUniqueConstraint tableName="account" columnNames="email"/>
+        <modifyDataType tableName="client" columnName="personal_code" newDataType="bigint"/>
+    </changeSet>
+    <changeSet id="21" author="Danila Kirejev">
+        <createTable tableName="pet">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="age" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

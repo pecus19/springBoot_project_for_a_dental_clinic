@@ -1,0 +1,31 @@
+stages:
+  - build
+  - deploy
+
+build test-backend:
+  stage: build
+  only:
+    refs:
+      - main
+
+  tags:
+    - main
+
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew build --exclude-task test
+    - docker build -t test-backend .
+
+deploy test-backend:
+  stage: deploy
+  only:
+    refs:
+      - main
+
+  tags:
+    - main
+
+  script:
+    - cd /opt/dentalclinic-backend
+    - docker compose down
+    - docker compose up -d
